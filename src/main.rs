@@ -1,3 +1,7 @@
+mod boid;
+mod constants;
+mod point;
+mod vector;
 mod world;
 
 use world::World;
