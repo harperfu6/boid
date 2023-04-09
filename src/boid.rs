@@ -4,9 +4,9 @@ use crate::vector::Vector;
 
 #[derive(Clone, Copy)]
 pub struct Boid {
-    id: u32,
-    point: Point,
-    vector: Vector,
+    pub id: u32,
+    pub point: Point,
+    pub vector: Vector,
 }
 
 impl Boid {
@@ -43,12 +43,13 @@ impl Boid {
 
             // separation
             // Method checks for nearby boids and steers away
-            let separation = Vector::mean(
+            let mut separation = Vector::mean(
                 neighbors
                     .iter()
                     .map(|b| self.point.vector_to(&b.point))
                     .collect::<Vec<Vector>>(),
             );
+            separation.set_length(separation.get_length() + 15f32);
             vectors.push(separation);
 
             // cohesion
@@ -65,6 +66,7 @@ impl Boid {
                     .map(|b| {
                         let mut v = Vector { dx: 1.0, dy: 0.0 };
                         v.set_angle(b.vector.get_angle());
+                        v.set_length(25f32);
                         v
                     })
                     .collect::<Vec<Vector>>(),

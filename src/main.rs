@@ -35,7 +35,8 @@ fn main() {
 
                 let transform = context
                     .transform
-                    .trans(point.get_x() as f64, point.get_y() as f64);
+                    .trans(point.get_x() as f64, point.get_y() as f64)
+                    .rot_rad(-boid.get_angle() as f64);
                 polygon([1.0, 0.0, 1.0, 1.0], BOID_BOD, transform, gfx)
             }
         });

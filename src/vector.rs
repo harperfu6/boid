@@ -28,6 +28,13 @@ impl Vector {
         (dx * dx + dy * dy).sqrt()
     }
 
+    pub fn set_length(&mut self, value: f32) {
+        let stretch = value / self.get_length();
+
+        self.dx *= stretch;
+        self.dy *= stretch;
+    }
+
     pub fn set_angle(&mut self, angle: f32) {
         let length = self.get_length();
         let rise = angle.sin() * length;
@@ -45,5 +52,12 @@ impl Vector {
         }
 
         angle
+    }
+
+    pub fn radial_distance(&self, other: Vector) -> f32 {
+        let diff = (other.get_angle() - self.get_angle()).abs();
+        let diff2 = PI_X_2 - diff;
+
+        return diff.min(diff2);
     }
 }
