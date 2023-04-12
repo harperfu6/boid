@@ -1,6 +1,10 @@
+use serde::{Deserialize, Serialize};
+use wasm_bindgen::prelude::*;
+
 use crate::vector::Vector;
 
-#[derive(Clone, Copy)]
+#[wasm_bindgen]
+#[derive(Clone, Copy, Serialize, Deserialize)]
 pub struct Point {
     x: f32,
     y: f32,

@@ -1,8 +1,12 @@
+use serde::{Deserialize, Serialize};
+use wasm_bindgen::prelude::*;
+
 use crate::constants::PI_X_2;
 use crate::point::Point;
 use crate::vector::Vector;
 
-#[derive(Clone, Copy)]
+#[wasm_bindgen]
+#[derive(Clone, Copy, Serialize, Deserialize)]
 pub struct Boid {
     pub id: u32,
     pub point: Point,
@@ -36,8 +40,13 @@ impl Boid {
         self.point.move_forward(x, y)
     }
 
-    // pub fn step(&mut self, seconds: f32) -> () {
-    pub fn step(&mut self, seconds: f32, neighbors: &Vec<Boid>) -> () {
+    // pub fn step(&mut self, seconds: f32, neighbors: &Vec<Boid>) -> () {
+    pub fn step(&mut self, seconds: f32, _neighbors: &Vec<JsValue>) -> () {
+        let neighbors: Vec<Boid> = _neighbors
+            .iter()
+            .map(|jv| serde_wasm_bindgen::from_value::<Boid>(jv.clone()).unwrap())
+            .collect();
+
         if neighbors.len() > 0 {
             let mut vectors: Vec<Vector> = Vec::new();
 

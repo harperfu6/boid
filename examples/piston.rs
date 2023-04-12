@@ -1,3 +1,4 @@
+use boid::Boid;
 use boid::World;
 
 use piston::WindowSettings;
@@ -24,13 +25,21 @@ fn main() {
             the_flock.step(i);
             let boids = the_flock.get_boids();
             for i in 0..boids.len() {
-                let boid = boids[i];
-                let point = boid.get_point();
+                let boid = boids[i].clone();
+                // let point = boid.get_point();
+                let point = serde_wasm_bindgen::from_value::<Boid>(boid.clone())
+                    .unwrap()
+                    .get_point();
 
                 let transform = context
                     .transform
                     .trans(point.get_x() as f64, point.get_y() as f64)
-                    .rot_rad(-boid.get_angle() as f64);
+                    // .rot_rad(-boid.get_angle() as f64);
+                    .rot_rad(
+                        serde_wasm_bindgen::from_value::<Boid>(-boid.clone())
+                            .unwrap()
+                            .get_angle() as f64,
+                    );
                 polygon([1.0, 0.0, 1.0, 1.0], BOID_BOD, transform, gfx)
             }
         });

@@ -1,6 +1,10 @@
+use serde::{Deserialize, Serialize};
+use wasm_bindgen::prelude::*;
+
 use crate::constants::PI_X_2;
 
-#[derive(Clone, Copy)]
+#[wasm_bindgen]
+#[derive(Clone, Copy, Serialize, Deserialize)]
 pub struct Vector {
     pub dx: f32,
     pub dy: f32,

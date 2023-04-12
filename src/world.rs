@@ -2,7 +2,9 @@ use crate::boid::Boid;
 use crate::point::Point;
 use crate::vector::Vector;
 use rand::Rng;
+use wasm_bindgen::prelude::{wasm_bindgen, JsValue};
 
+#[wasm_bindgen]
 pub struct World {
     width: f32,
     height: f32,
@@ -21,6 +23,7 @@ const SIGHT: f32 = 25.0;
 const GRID_GAP: f32 = 8.0;
 const FIELD_OF_VIEW: f32 = std::f32::consts::PI * 3.0 / 4.0;
 
+#[wasm_bindgen]
 impl World {
     pub fn new(total_boids: u32, size: f32) -> World {
         let mut boids = Vec::new();
@@ -57,11 +60,18 @@ impl World {
         }
     }
 
-    pub fn get_boids(&self) -> Vec<Boid> {
-        self.boids.clone()
+    // pub fn get_boids(&self) -> Vec<Boid> {
+    pub fn get_boids(&self) -> Vec<JsValue> {
+        // self.boids.clone()
+        self.boids
+            .clone()
+            .iter()
+            .map(|b| serde_wasm_bindgen::to_value(b).unwrap())
+            .collect()
     }
 
-    pub fn get_visible_neighbors(&self, boid: &Boid) -> Vec<Boid> {
+    // pub fn get_visible_neighbors(&self, boid: &Boid) -> Vec<Boid> {
+    pub fn get_visible_neighbors(&self, boid: &Boid) -> Vec<JsValue> {
         let grid = Grid {
             x: (boid.point.get_x() / SIGHT).floor(),
             y: (boid.point.get_y() / SIGHT).floor(),
@@ -95,5 +105,8 @@ impl World {
                 true
             })
             .collect::<Vec<Boid>>()
+            .iter()
+            .map(|b| serde_wasm_bindgen::to_value(b).unwrap())
+            .collect()
     }
 }
