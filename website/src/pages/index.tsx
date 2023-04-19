@@ -1,47 +1,73 @@
 import init, { World } from "@/pkg/boid";
-import { Graphics, Stage } from "@pixi/react";
+import { Graphics, Stage, Sprite } from "@pixi/react";
 import { useCallback, useEffect, useState } from "react";
 
-type BoidProps = {};
+type BoidItemProps = {
+  x: number;
+  y: number;
+};
 
-const Boid: React.FC<BoidProps> = () => {
+{
+  /* const BOID_BOD: &'static [[f64; 2]] = &[[5.0, 5.0], [10.0, 0.0], [5.0, 15.0], [0.0, 0.0]]; */
+}
+const BoidItem: React.FC<BoidItemProps> = ({ x, y }) => {
   const draw = useCallback((g: any) => {
-    g.clear;
-    g.beginFill(0xff3300);
-    g.lineStyle(4, 0xffd900, 1);
-    g.moveTo(50, 50);
-    g.lineTo(250, 50);
-    g.lineTo(100, 100);
-    g.lineTo(50, 50);
+    g.clear();
+    g.beginFill(0x000000);
+    g.lineTo(5, 5);
+    g.lineTo(10, 0);
+    g.lineTo(5, 15);
+    g.lineTo(0, 0);
+    g.setTransform(x, y);
     g.endFill();
-  }, []);
+  }, [x, y]);
   return <Graphics draw={draw} />;
+};
+
+type Boid = {
+  x: number;
+  y: number;
 };
 
 const Home = () => {
   const [loadWasm, setLoadWasmFlg] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [boids, setBoids] = useState<Boid[]>();
+  const [position, setPosition] = useState<number>(0);
+
+  {/* useEffect(() => { */}
+  {/*   init().then(() => setLoadWasmFlg(true)); */}
+  {/* }); */}
 
   useEffect(() => {
-    init()
-      .then(() => setLoadWasmFlg(true))
-      .then((err) => console.log("err", err));
+		let timerId: number;
+
+    const step = () => {
+      setPosition((current) => current + 1);
+      timerId = requestAnimationFrame(step);
+    };
+
+    timerId = requestAnimationFrame(step);
+
+    return () => {
+      cancelAnimationFrame(timerId);
+    };
   });
 
-  useEffect(() => {
-    if (!loadWasm) return;
-  }, [loadWasm]);
-
-  if (!loadWasm) return <div>loading wasm...</div>;
+  {/* if (!loadWasm) return <div>loading wasm...</div>; */}
 
   const numBoids = 250;
   const size = 600;
-  const theFlock = World.new(numBoids, size);
-	console.log(theFlock);
+  {/* const theFlock = World.new(numBoids, size); */}
+
+  {
+    /* const boids = theFlock.get_boids() */
+  }
 
   return (
     <>
-      <Stage width={600} height={300} options={{ backgroundColor: 0xffffff }}>
-        <Boid />
+      <Stage width={800} height={800} options={{ backgroundColor: 0xffffff }}>
+        <BoidItem x={position} y={position} />
       </Stage>
     </>
   );
