@@ -1,13 +1,22 @@
+use crate::vector::Vector;
 use serde::{Deserialize, Serialize};
+
+#[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
-use crate::vector::Vector;
-
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 #[derive(Clone, Copy, Serialize, Deserialize)]
 pub struct Point {
-    x: f32,
-    y: f32,
+    pub x: f32,
+    pub y: f32,
+}
+
+#[cfg(not(target_arch = "wasm32"))]
+#[derive(Clone, Copy, Serialize, Deserialize)]
+pub struct Point {
+    pub x: f32,
+    pub y: f32,
 }
 
 impl Point {

@@ -1,13 +1,20 @@
+# ブラウザでの実行
 - wasmへのビルド
 ```
-$ cargo b --target wasm32-unknown-unknown
 $ wasm-pack build --target web
 ```
 
-- [WIP] Rustでの実行
+- ブラウザでの実行
+```
+$ cd website 
+$ yarn dev
+```
+
+# Rustでの実行
 ```
 $ cargo r --example piston 
 ```
 
-- Todo
-	- Rust単体でもexampleから実行できるようにする
+# ref
+## flockアルゴリズム
+- https://github.com/camsjams/rust-flock-of-boids

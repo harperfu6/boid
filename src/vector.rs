@@ -1,9 +1,18 @@
+use crate::constants::PI_X_2;
 use serde::{Deserialize, Serialize};
+
+#[cfg(target_arch = "wasm32")]
 use wasm_bindgen::prelude::*;
 
-use crate::constants::PI_X_2;
-
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
+#[derive(Clone, Copy, Serialize, Deserialize)]
+pub struct Vector {
+    pub dx: f32,
+    pub dy: f32,
+}
+
+#[cfg(not(target_arch = "wasm32"))]
 #[derive(Clone, Copy, Serialize, Deserialize)]
 pub struct Vector {
     pub dx: f32,

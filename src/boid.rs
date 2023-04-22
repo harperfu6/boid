@@ -1,11 +1,21 @@
-use serde::{Deserialize, Serialize};
-use wasm_bindgen::prelude::*;
-
 use crate::constants::PI_X_2;
 use crate::point::Point;
 use crate::vector::Vector;
+use serde::{Deserialize, Serialize};
 
+#[cfg(target_arch = "wasm32")]
+use wasm_bindgen::prelude::*;
+
+#[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
+#[derive(Clone, Copy, Serialize, Deserialize)]
+pub struct Boid {
+    pub id: u32,
+    pub point: Point,
+    pub vector: Vector,
+}
+
+#[cfg(not(target_arch = "wasm32"))]
 #[derive(Clone, Copy, Serialize, Deserialize)]
 pub struct Boid {
     pub id: u32,
@@ -40,13 +50,57 @@ impl Boid {
         self.point.move_forward(x, y)
     }
 
-    // pub fn step(&mut self, seconds: f32, neighbors: &Vec<Boid>) -> () {
+    #[cfg(target_arch = "wasm32")]
     pub fn step(&mut self, seconds: f32, _neighbors: &Vec<JsValue>) -> () {
         let neighbors: Vec<Boid> = _neighbors
             .iter()
             .map(|jv| serde_wasm_bindgen::from_value::<Boid>(jv.clone()).unwrap())
             .collect();
 
+        if neighbors.len() > 0 {
+            let mut vectors: Vec<Vector> = Vec::new();
+
+            // separation
+            // Method checks for nearby boids and steers away
+            let mut separation = Vector::mean(
+                neighbors
+                    .iter()
+                    .map(|b| self.point.vector_to(&b.point))
+                    .collect::<Vec<Vector>>(),
+            );
+            separation.set_length(separation.get_length() + 15f32);
+            vectors.push(separation);
+
+            // cohesion
+            // For the average position (i.e. center) of all nearby boids, calculate steering vector towards that position
+            let average_location =
+                Point::mean(neighbors.iter().map(|b| b.point).collect::<Vec<Point>>());
+            vectors.push(self.point.vector_to(&average_location));
+
+            // alignment
+            // For every nearby boid in the system, calculate the average velocity
+            let average_heading = Vector::mean(
+                neighbors
+                    .iter()
+                    .map(|b| {
+                        let mut v = Vector { dx: 1.0, dy: 0.0 };
+                        v.set_angle(b.vector.get_angle());
+                        v.set_length(25f32);
+                        v
+                    })
+                    .collect::<Vec<Vector>>(),
+            );
+            vectors.push(average_heading);
+
+            let final_vector = Vector::mean(vectors);
+            self.turn_to(final_vector.get_angle(), 0.02);
+        }
+
+        self.step_forward(seconds)
+    }
+
+    #[cfg(not(target_arch = "wasm32"))]
+    pub fn step(&mut self, seconds: f32, neighbors: &Vec<Boid>) -> () {
         if neighbors.len() > 0 {
             let mut vectors: Vec<Vector> = Vec::new();
 

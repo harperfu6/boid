@@ -5,13 +5,17 @@ edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-# piston = "0.53.2"
-# piston_window = "0.128.0"
-rand = "0.8.5"
-wasm-bindgen = "0.2.84"
 serde = { version = "1.0", features = ["derive"] }
-serde-wasm-bindgen = "0.5.0"
+rand = "0.8.5"
 getrandom = { version = "0.2.9", features = ["js"] }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+wasm-bindgen = {version = "0.2.84"}
+serde-wasm-bindgen = {version = "0.5.0"}
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+piston = {version = "0.53.2"}
+piston_window = {version = "0.128.0"}
